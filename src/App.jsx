@@ -22,7 +22,7 @@ function Button({ children, variant = "primary", className = "", ...props }) {
             ? "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 active:bg-slate-100"
             : variant === "danger"
                 ? "border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 active:bg-red-200"
-                : "bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950";
+                : "bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800";
     return (
         <button
             className={`inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${styles} ${className}`}
@@ -51,7 +51,7 @@ function Toggle({ label, checked, onChange }) {
                 type="checkbox"
                 checked={checked}
                 onChange={(e) => onChange(e.target.checked)}
-                className="h-4 w-4 shrink-0 accent-slate-900"
+                className="h-4 w-4 shrink-0 accent-brand-600"
             />
         </label>
     );
@@ -59,21 +59,31 @@ function Toggle({ label, checked, onChange }) {
 
 function SignIn({ error, busy, onSignIn }) {
     return (
-        <main className="grid min-h-dvh place-items-center bg-slate-100 p-4 sm:p-6">
-            <section className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                <div className="mb-6 sm:mb-8">
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Thermica POS</p>
-                    <h1 className="mt-1.5 text-xl font-black text-slate-900 sm:text-2xl">Admin Panel</h1>
-                    <p className="mt-1.5 text-sm text-slate-600">Manage shared receipt settings and staff access.</p>
+        <main className="relative grid min-h-dvh place-items-center overflow-hidden bg-paper p-4 sm:p-6">
+            <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-brand-100/70 blur-3xl" />
+            <div aria-hidden="true" className="pointer-events-none absolute -bottom-36 -left-24 h-96 w-96 rounded-full bg-brand-50 blur-3xl" />
+            <section className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white bg-white p-7 shadow-xl shadow-brand-900/5 sm:p-9">
+                <div className="mb-8">
+                    <div className="mb-7 grid h-12 w-12 place-items-center rounded-xl bg-brand-600 text-lg font-black text-white shadow-lg shadow-brand-600/20">T</div>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-700">Thermica POS</p>
+                    <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Welcome back</h1>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">Sign in to manage receipt settings and staff access.</p>
                 </div>
                 {error && (
                     <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700 sm:text-sm">
                         {error}
                     </p>
                 )}
-                <Button className="w-full" onClick={onSignIn} disabled={busy}>
+                <Button className="w-full gap-3 rounded-xl py-3" onClick={onSignIn} disabled={busy}>
+                    <svg aria-hidden="true" viewBox="0 0 48 48" className="h-5 w-5 rounded-full bg-white p-0.5">
+                        <path fill="#4285F4" d="M43.6 24.5c0-1.5-.1-2.9-.4-4.3H24v8.1h11c-.5 2.6-2 4.8-4.3 6.3v5.2h7c4-3.7 5.9-9.1 5.9-15.3Z" />
+                        <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-7-5.2c-1.8 1.2-4 1.9-6.5 1.9-5 0-9.2-3.4-10.7-8H6.1v5.4A20 20 0 0 0 24 44Z" />
+                        <path fill="#FBBC05" d="M13.3 27.8a12 12 0 0 1 0-7.6v-5.4H6.1a20 20 0 0 0 0 18.4l7.2-5.4Z" />
+                        <path fill="#EA4335" d="M24 12.2c3 0 5.7 1 7.8 3.1l5.9-5.9C34.1 6.1 29.5 4 24 4A20 20 0 0 0 6.1 14.8l7.2 5.4c1.5-4.6 5.7-8 10.7-8Z" />
+                    </svg>
                     {busy ? "Signing in…" : "Continue with Google"}
                 </Button>
+                <p className="mt-6 text-center text-xs text-slate-500">Secure sign-in for authorized administrators</p>
             </section>
         </main>
     );
@@ -81,7 +91,7 @@ function SignIn({ error, busy, onSignIn }) {
 
 function Denied({ user, onSignOut }) {
     return (
-        <main className="grid min-h-dvh place-items-center bg-slate-100 p-4 sm:p-6">
+        <main className="grid min-h-dvh place-items-center bg-paper p-4 sm:p-6">
             <section className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8">
                 <h1 className="text-lg font-black text-slate-900 sm:text-xl">Access Denied</h1>
                 <p className="mt-2 text-sm text-slate-600">Owner privileges required.</p>
@@ -421,12 +431,12 @@ function Admin({ user, onSignOut }) {
     };
 
     return (
-        <div className="min-h-dvh bg-slate-100">
-            <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur-md">
-                <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="min-h-dvh bg-paper">
+            <header className="sticky top-0 z-20 border-b border-brand-100/80 bg-white/90 shadow-sm shadow-slate-900/[0.02] backdrop-blur-xl">
+                <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <span className="rounded-md bg-slate-900 px-2 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+                            <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-xs font-black tracking-wider text-white shadow-md shadow-brand-600/20">
                                 POS
                             </span>
                             <div>
@@ -447,7 +457,7 @@ function Admin({ user, onSignOut }) {
                     </div>
 
                     <div className="flex items-center justify-between gap-4">
-                        <nav className="grid w-full grid-cols-2 rounded-lg border border-slate-200 bg-slate-100 p-1 sm:flex sm:w-auto">
+                        <nav className="grid w-full grid-cols-2 rounded-xl border border-slate-200/80 bg-paper p-1 sm:flex sm:w-auto">
                             {[
                                 ["settings", "Receipt Settings"],
                                 ["staff", "Staff & Cashiers"],
@@ -456,7 +466,7 @@ function Admin({ user, onSignOut }) {
                                     key={key}
                                     type="button"
                                     onClick={() => setTab(key)}
-                                    className={`rounded-md px-3.5 py-1.5 text-xs font-bold transition ${tab === key ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                                    className={`rounded-lg px-3.5 py-2 text-xs font-bold transition ${tab === key ? "bg-white text-brand-700 shadow-sm ring-1 ring-brand-100" : "text-slate-600 hover:bg-white/70 hover:text-slate-900"
                                         }`}
                                 >
                                     {label}
@@ -480,25 +490,40 @@ function Admin({ user, onSignOut }) {
                 </div>
             </header>
 
-            <main className="mx-auto max-w-7xl p-4 sm:p-6">
+            <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-9">
+                <div className="mb-6 sm:mb-8">
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">Workspace</p>
+                    <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+                        {tab === "staff" ? "Staff & cashiers" : "Receipt settings"}
+                    </h2>
+                    <p className="mt-1.5 text-sm text-slate-600">
+                        {tab === "staff" ? "Manage who can access your POS workspace." : "Customize what appears on every customer receipt."}
+                    </p>
+                </div>
                 {tab === "staff" ? (
                     <StaffManager currentUserEmail={user.email} />
                 ) : (
                     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.85fr)] lg:gap-6">
                         <form onSubmit={save} className="min-w-0 space-y-5">
-                            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-                                <h2 className="mb-4 text-sm font-extrabold text-slate-900 sm:text-base">Receipt header</h2>
+                            <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-900/[0.03] sm:p-6">
+                                <h2 className="mb-4 flex items-center gap-2 text-sm font-extrabold text-slate-900 sm:text-base"><span className="h-5 w-1 rounded-full bg-brand-500" />Receipt header</h2>
                                 <div className="grid gap-4 sm:grid-cols-2">
-                                    <Field label="Header mode">
-                                        <select
-                                            value={settings.headerMode}
-                                            onChange={(e) => set("headerMode", e.target.value)}
-                                            className="input"
-                                        >
-                                            <option value="text">Business name</option>
-                                            <option value="logo">Logo</option>
-                                        </select>
-                                    </Field>
+                                    <div className="block min-w-0">
+                                        <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Header mode</span>
+                                        <div role="group" aria-label="Header mode" className="flex rounded-xl border border-slate-200 bg-paper p-1">
+                                            {[["text", "Business name"], ["logo", "Logo"]].map(([value, label]) => (
+                                                <button
+                                                    key={value}
+                                                    type="button"
+                                                    aria-pressed={settings.headerMode === value}
+                                                    onClick={() => set("headerMode", value)}
+                                                    className={`flex-1 rounded-lg px-3 py-2.5 text-sm font-bold transition ${settings.headerMode === value ? "bg-white text-brand-700 shadow-sm ring-1 ring-brand-100" : "text-slate-600 hover:text-slate-900"}`}
+                                                >
+                                                    {label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                     <Field label="Business name">
                                         <input
                                             className="input"
@@ -545,7 +570,7 @@ function Admin({ user, onSignOut }) {
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={upload}
-                                                className="block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-2 file:text-xs file:font-bold file:text-white sm:text-sm"
+                                                className="block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-600 file:px-3 file:py-2 file:text-xs file:font-bold file:text-white sm:text-sm"
                                             />
                                         </Field>
                                         {settings.logo && (
@@ -568,8 +593,8 @@ function Admin({ user, onSignOut }) {
                                 )}
                             </section>
 
-                            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-                                <h2 className="mb-4 text-sm font-extrabold text-slate-900 sm:text-base">Receipt content</h2>
+                            <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-900/[0.03] sm:p-6">
+                                <h2 className="mb-4 flex items-center gap-2 text-sm font-extrabold text-slate-900 sm:text-base"><span className="h-5 w-1 rounded-full bg-brand-500" />Receipt content</h2>
                                 <div className="space-y-4">
                                     <Field label="Header note">
                                         <textarea
@@ -588,8 +613,8 @@ function Admin({ user, onSignOut }) {
                                 </div>
                             </section>
 
-                            <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-                                <h2 className="mb-4 text-sm font-extrabold text-slate-900 sm:text-base">Receipt toggles</h2>
+                            <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-900/[0.03] sm:p-6">
+                                <h2 className="mb-4 flex items-center gap-2 text-sm font-extrabold text-slate-900 sm:text-base"><span className="h-5 w-1 rounded-full bg-brand-500" />Receipt toggles</h2>
                                 <div className="grid gap-2.5 sm:grid-cols-2">
                                     <Toggle
                                         label="Print kitchen copy (KOT)"
@@ -614,7 +639,7 @@ function Admin({ user, onSignOut }) {
                                 </div>
                             </section>
 
-                            <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-col gap-3 rounded-2xl border border-brand-100 bg-white p-4 shadow-sm shadow-brand-900/[0.04] sm:flex-row sm:items-center sm:justify-between sm:px-5">
                                 <div className="min-w-0">
                                     {message && (
                                         <span role="status" className="block text-xs font-semibold text-emerald-700 sm:text-sm">

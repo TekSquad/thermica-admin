@@ -429,15 +429,24 @@ function Admin({ user, onSignOut }) {
             setError(e.message);
         }
     };
-
+    const [logoError, setLogoError] = useState(false);
     return (
         <div className="min-h-dvh bg-paper">
             <header className="sticky top-0 z-20 border-b border-brand-100/80 bg-white/90 shadow-sm shadow-slate-900/[0.02] backdrop-blur-xl">
                 <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-xs font-black tracking-wider text-white shadow-md shadow-brand-600/20">
-                                POS
+                            <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-slate-900 text-xs font-black tracking-wider text-white shadow-md shadow-slate-900/10">
+                                {!logoError ? (
+                                    <img
+                                        src="/logo.png"
+                                        alt=""
+                                        onError={() => setLogoError(true)}
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="grid h-full w-full place-items-center bg-red-600 text-white">POS</span>
+                                )}
                             </span>
                             <div>
                                 <h1 className="text-base font-black leading-none text-slate-900 sm:text-lg">Thermica Admin</h1>

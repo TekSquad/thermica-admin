@@ -4,13 +4,58 @@
     --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --color-brand-50: #fff1f2;
     --color-brand-100: #ffe1e4;
-    --color-brand-200: #fbc5cb;
     --color-brand-500: #ef4f5f;
     --color-brand-600: #e23744;
     --color-brand-700: #cb2d3a;
-    --color-brand-800: #b3202d;
-    --color-brand-900: #96182a;
-    --color-paper: #f6f6f4;
+
+    --animate-fade: fade 0.2s ease-out both;
+    --animate-pop: pop 0.25s cubic-bezier(0.2, 0.9, 0.25, 1.1) both;
+    --animate-rise: rise 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    --animate-slide: slide 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+    @keyframes fade {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes pop {
+        from {
+            opacity: 0;
+            transform: translateY(12px) scale(0.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    @keyframes rise {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    @keyframes slide {
+        from {
+            transform: translateX(-100%);
+        }
+
+        to {
+            transform: none;
+        }
+    }
 }
 
 @layer base {
@@ -19,11 +64,11 @@
     body,
     #root {
         min-height: 100dvh;
-        overflow-x: hidden;
     }
 
     body {
-        @apply bg-paper font-sans text-slate-800 antialiased;
+        @apply bg-slate-50 font-sans text-slate-800 antialiased;
+        -webkit-tap-highlight-color: transparent;
     }
 
     button,
@@ -32,10 +77,24 @@
     textarea {
         font: inherit;
     }
+
+    button {
+        cursor: pointer;
+    }
 }
 
 @layer components {
     .input {
-        @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base sm:text-sm text-slate-900 outline-none transition focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15;
+        @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-4 focus:ring-slate-900/5 disabled:bg-slate-50 disabled:text-slate-500 sm:text-sm;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
     }
 }

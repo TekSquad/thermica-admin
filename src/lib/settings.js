@@ -17,3 +17,6 @@ export const DEFAULT_SETTINGS = {
     printKitchen: true,
     logo: null,
 };
+
+export const pickShared = (value) =>
+    Object.fromEntries(SHARED_KEYS.filter((k) => value?.[k] !== undefined).map((k) => [k, value[k]]));

@@ -2,6 +2,8 @@
   "name": "thermica-admin",
   "private": true,
   "version": "1.0.0",
+  "author": "TekSquad",
+  "homepage": "https://teksquad.tech",
   "type": "module",
   "scripts": {
     "dev": "vite",

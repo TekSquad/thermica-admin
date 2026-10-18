@@ -107,3 +107,7 @@ export function row(left, right, w) {
     const l = left.length + right.length >= w ? left.slice(0, Math.max(0, w - right.length - 1)) : left;
     return l + " ".repeat(Math.max(1, w - l.length - right.length)) + right;
 }
+
+const HOUR_FMT = new Intl.DateTimeFormat("en-GB", { timeZone: TZ, hour: "numeric", hour12: false });
+/** Hour of day (0-23, IST) of an ISO timestamp. */
+export const istHourOf = (iso) => Number(HOUR_FMT.format(new Date(iso))) % 24;

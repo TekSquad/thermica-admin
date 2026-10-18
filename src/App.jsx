@@ -14,6 +14,8 @@ const PAGES = {
     menu: lazy(() => import("./pages/Menu")),
     receipt: lazy(() => import("./pages/Receipt")),
     staff: lazy(() => import("./pages/Staff")),
+    reports: lazy(() => import("./pages/Reports")),
+    system: lazy(() => import("./pages/System")),
 };
 
 const PageSkeleton = () => (

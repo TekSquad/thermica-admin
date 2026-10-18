@@ -1,5 +1,6 @@
 import Icon from "../components/Icon";
 import { Button, Logo, Spinner } from "../components/ui";
+import Credit from "../components/Credit";
 
 const GoogleG = () => (
     <svg aria-hidden="true" viewBox="0 0 48 48" className="h-5 w-5 rounded-full bg-white p-0.5">
@@ -79,7 +80,7 @@ export default function Login({ auth }) {
                         ))}
                     </ul>
                 </div>
-                <div className="relative text-xs text-slate-500">Thermica POS · Crafted by TekSquad</div>
+                <Credit dark className="relative" />
             </section>
 
             <section className="grid place-items-center bg-slate-50 p-6">
@@ -102,6 +103,7 @@ export default function Login({ auth }) {
                         {busy ? "Signing in…" : "Continue with Google"}
                     </Button>
                     <p className="mt-6 text-center text-xs text-slate-400">Authorized owners only</p>
+                    <Credit className="mt-10 justify-center" />
                 </div>
             </section>
         </main>

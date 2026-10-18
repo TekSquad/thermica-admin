@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Icon from "./Icon";
 import { Avatar, IconButton, Logo } from "./ui";
 import { NAV } from "../config/nav";
+import Credit from "./Credit";
 
 function Sidebar({ route, onNavigate, user, onSignOut }) {
     const groups = [...new Set(NAV.map((n) => n.group))];
@@ -48,6 +49,7 @@ function Sidebar({ route, onNavigate, user, onSignOut }) {
                     </div>
                     <IconButton name="logout" label="Sign out" onClick={onSignOut} />
                 </div>
+                <Credit className="mt-2 px-2" />
             </div>
         </div>
     );
@@ -85,7 +87,10 @@ export default function Shell({ route, onNavigate, user, onSignOut, children }) 
             )}
 
             <main className="min-w-0">
-                <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
+                <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+                    {children}
+                    <Credit className="mt-12 justify-center" />
+                </div>
             </main>
         </div>
     );

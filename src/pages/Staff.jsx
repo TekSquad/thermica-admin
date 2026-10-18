@@ -103,7 +103,7 @@ export default function Staff({ user }) {
                                         <div className="flex flex-wrap items-center gap-1.5">
                                             <span className="truncate text-sm font-bold text-slate-900">{m.name || m.email}</span>
                                             {self && <Badge>You</Badge>}
-                                            <Badge tone={m.role === "owner" ? "blue" : "slate"}>{m.role === "owner" ? "Owner" : "Cashier"}</Badge>
+                                            <Badge tone={m.role === "owner" ? "blue" : "slate"}>{m.role === "owner" ? "Manager" : "Staff"}</Badge>
                                             {!m.active && <Badge tone="red">Disabled</Badge>}
                                         </div>
                                         <div className="truncate text-xs text-slate-500">
@@ -117,8 +117,8 @@ export default function Staff({ user }) {
                                             value={m.role}
                                             onChange={(e) => update(m, { role: e.target.value })}
                                             className="input !w-auto !py-1.5 !text-xs font-bold">
-                                            <option value="cashier">Cashier</option>
-                                            <option value="owner">Owner</option>
+                                            <option value="cashier">Staff</option>
+                                            <option value="owner">Manager</option>
                                         </select>
                                         <Button variant="secondary" size="sm" disabled={lock} onClick={() => update(m, { active: !m.active })}>
                                             {m.active ? "Disable" : "Enable"}

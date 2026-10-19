@@ -20,7 +20,7 @@ const SORTERS = {
 };
 const DEFAULT_F = { staff: "all", method: "all", status: "all", type: "all", sort: "newest" };
 
-function BillModal({ bill, user, onClose, onChanged }) {
+function BillModal({ bill, user, onClose, onChanged, readOnly = false }) {
     const { toast } = useFeedback();
     const [voiding, setVoiding] = useState(false);
     const [reason, setReason] = useState("");
@@ -54,7 +54,7 @@ function BillModal({ bill, user, onClose, onChanged }) {
                 ) : (
                     <div className="flex justify-end gap-2">
                         <Button variant="secondary" onClick={onClose}>Close</Button>
-                        {!isVoid && <Button variant="danger" onClick={() => setVoiding(true)}>Void bill</Button>}
+                        {!readOnly && !isVoid && <Button variant="danger" onClick={() => setVoiding(true)}>Void bill</Button>}
                     </div>
                 )
             }>
@@ -157,7 +157,7 @@ function BillRow({ b, onOpen }) {
     );
 }
 
-export default function Sales({ user }) {
+export default function Sales({ user, readOnly = false }) {
     const today = istDateKey();
     const [range, setRange] = useState({ from: today, to: today });
     const [f, setF] = useState(DEFAULT_F);
@@ -337,6 +337,7 @@ export default function Sales({ user }) {
                 <BillModal
                     bill={open}
                     user={user}
+                    readOnly={readOnly}
                     onClose={() => setOpen(null)}
                     onChanged={() => {
                         setOpen(null);

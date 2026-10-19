@@ -4,8 +4,8 @@ import { Avatar, IconButton, Logo } from "./ui";
 import { NAV } from "../config/nav";
 import Credit from "./Credit";
 
-function Sidebar({ route, onNavigate, user, onSignOut }) {
-    const groups = [...new Set(NAV.map((n) => n.group))];
+function Sidebar({ route, onNavigate, user, onSignOut, nav = NAV }) {
+    const groups = [...new Set(nav.map((n) => n.group))];
     return (
         <div className="flex h-full flex-col bg-white">
             <div className="flex items-center gap-3 px-5 py-5">
@@ -21,7 +21,7 @@ function Sidebar({ route, onNavigate, user, onSignOut }) {
                     <div key={g}>
                         <div className="px-3 pb-1.5 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">{g}</div>
                         <div className="space-y-0.5">
-                            {NAV.filter((n) => n.group === g).map((n) => {
+                            {nav.filter((n) => n.group === g).map((n) => {
                                 const on = route === n.key;
                                 return (
                                     <button
@@ -55,9 +55,9 @@ function Sidebar({ route, onNavigate, user, onSignOut }) {
     );
 }
 
-export default function Shell({ route, onNavigate, user, onSignOut, children }) {
+export default function Shell({ route, onNavigate, user, onSignOut, children, nav = NAV, accessStatus = "active" }) {
     const [open, setOpen] = useState(false);
-    const current = NAV.find((n) => n.key === route);
+    const current = nav.find((n) => n.key === route);
 
     useEffect(() => {
         setOpen(false);
@@ -68,7 +68,7 @@ export default function Shell({ route, onNavigate, user, onSignOut, children }) 
         <div className="min-h-dvh lg:grid lg:grid-cols-[16rem_minmax(0,1fr)]">
             <aside className="hidden border-r border-slate-200 lg:block">
                 <div className="sticky top-0 h-dvh">
-                    <Sidebar route={route} onNavigate={onNavigate} user={user} onSignOut={onSignOut} />
+                    <Sidebar route={route} onNavigate={onNavigate} user={user} onSignOut={onSignOut} nav={nav} />
                 </div>
             </aside>
 
@@ -81,13 +81,14 @@ export default function Shell({ route, onNavigate, user, onSignOut, children }) 
             {open && (
                 <div className="animate-fade fixed inset-0 z-40 bg-slate-900/50 lg:hidden" onClick={() => setOpen(false)}>
                     <div className="animate-slide h-full w-72 max-w-[85vw] shadow-2xl" onClick={(e) => e.stopPropagation()}>
-                        <Sidebar route={route} onNavigate={onNavigate} user={user} onSignOut={onSignOut} />
+                        <Sidebar route={route} onNavigate={onNavigate} user={user} onSignOut={onSignOut} nav={nav} />
                     </div>
                 </div>
             )}
 
             <main className="min-w-0">
                 <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+                    {accessStatus === "paused" && <div role="status" className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"><b>Business paused.</b> You can review past bills and reports. Operational features are unavailable.</div>}
                     {children}
                     <Credit className="mt-12 justify-center" />
                 </div>

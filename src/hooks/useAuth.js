@@ -1,19 +1,27 @@
 import { useCallback, useEffect, useState } from "react";
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-import { getDoc } from "firebase/firestore";
-import { auth, ref } from "../config/firebase";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { auth, BIZ, db, ref } from "../config/firebase";
 
 /** status: loading | checking | signedOut | denied | ready */
 export default function useAuth() {
-    const [state, setState] = useState({ status: "loading", user: null });
+    const [state, setState] = useState({ status: "loading", user: null, tenantStatus: null });
     const [error, setError] = useState("");
     const [busy, setBusy] = useState(false);
     const [attempt, setAttempt] = useState(0);
 
     useEffect(() => {
         let alive = true;
-        const off = onAuthStateChanged(auth, async (fb) => {
-            if (!fb) return alive && setState({ status: "signedOut", user: null });
+        let authGeneration = 0;
+        let offTenant = null;
+        const offAuth = onAuthStateChanged(auth, async (fb) => {
+            const generation = ++authGeneration;
+            offTenant?.();
+            offTenant = null;
+            if (!fb) {
+                if (alive) setState({ status: "signedOut", user: null, tenantStatus: null });
+                return;
+            }
 
             const user = {
                 uid: fb.uid,
@@ -21,23 +29,49 @@ export default function useAuth() {
                 name: fb.displayName || fb.email || "Owner",
                 photo: fb.photoURL || "",
             };
-            setState({ status: "checking", user });
+            if (alive) setState({ status: "checking", user, tenantStatus: null });
             try {
-                const snap = await getDoc(ref("staff", user.email));
-                const s = snap.exists() ? snap.data() : null;
-                const ok = s?.active === true && s?.role === "owner";
-                if (!alive) return;
-                setError("");
-                setState({ status: ok ? "ready" : "denied", user });
+                const staffSnap = await getDoc(ref("staff", user.email));
+                const staff = staffSnap.exists() ? staffSnap.data() : null;
+                const owner = staff?.active === true && staff?.role === "owner";
+                if (!alive || generation !== authGeneration) return;
+                if (!owner) {
+                    setError("");
+                    setState({ status: "denied", user, tenantStatus: null });
+                    return;
+                }
+
+                // The registry is the shared control plane. Firestore rules permit only this
+                // exact tenant document to an active owner and independently enforce its state.
+                offTenant = onSnapshot(doc(db, "teksquad_platform", "metadata", "businesses", BIZ), { includeMetadataChanges: true }, (tenantSnap) => {
+                    if (!alive || generation !== authGeneration) return;
+                    if (tenantSnap.metadata.fromCache) {
+                        setState({ status: "checking", user, tenantStatus: null });
+                        return;
+                    }
+                    const tenantStatus = tenantSnap.exists() ? tenantSnap.data().status || "active" : "suspended";
+                    if (!["active", "paused", "suspended"].includes(tenantStatus)) {
+                        setError("This business has an unsupported access status. Contact Thermica support.");
+                        setState({ status: "denied", user, tenantStatus: null });
+                        return;
+                    }
+                    setError("");
+                    setState({ status: "ready", user, tenantStatus });
+                }, (err) => {
+                    if (!alive || generation !== authGeneration) return;
+                    setError(err.message || "Could not verify this business status.");
+                    setState({ status: "denied", user, tenantStatus: null });
+                });
             } catch (e) {
-                if (!alive) return;
+                if (!alive || generation !== authGeneration) return;
                 setError(e.message || "Could not verify owner access.");
-                setState({ status: "denied", user });
+                setState({ status: "denied", user, tenantStatus: null });
             }
         });
         return () => {
             alive = false;
-            off();
+            offTenant?.();
+            offAuth();
         };
     }, [attempt]);
 

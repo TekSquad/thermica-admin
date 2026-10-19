@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useFeedback } from "../components/Feedback";
 import { Avatar, Badge, Button, Card, Empty, ErrorNote, Field, Modal, PageHeader, Skeleton } from "../components/ui";
 import useWatch from "../hooks/useWatch";
@@ -64,6 +64,7 @@ export default function Staff({ user }) {
     const { toast, confirm } = useFeedback();
     const { data: list, loading, error } = useWatch(watchStaff, [], []);
     const [adding, setAdding] = useState(false);
+    const pending = useRef(new Set());
 
     const activeOwners = list.filter((m) => m.role === "owner" && m.active).length;
     // Never allow locking out the primary root owner, yourself, or the last active owner.
@@ -72,14 +73,53 @@ export default function Staff({ user }) {
         m.email.toLowerCase() === user.email ||
         (m.role === "owner" && m.active && activeOwners <= 1);
 
-    const update = (m, patch) =>
-        saveStaff(m.email, { name: m.name, role: m.role, active: m.active, ...patch }, user.email).catch((e) =>
-            toast(e.code === "permission-denied" ? "Permission denied." : e.message, "error"),
-        );
+    const update = async (m, patch) => {
+        const statusChange = Object.hasOwn(patch, "active") && patch.active !== m.active;
+        const key = m.email.toLowerCase();
+        if (pending.current.has(key)) return;
+        pending.current.add(key);
+        if (statusChange) {
+            const approved = await confirm({
+                title: `${patch.active ? "Enable" : "Disable"} staff access`,
+                message: `${m.name || m.email} (${m.email}) will be ${patch.active ? "enabled" : "disabled"} for the POS. Continue?`,
+                confirmLabel: `${patch.active ? "Enable" : "Disable"} access`,
+                danger: !patch.active,
+            });
+            if (!approved) {
+                pending.current.delete(key);
+                return;
+            }
+            const current = list.find((item) => item.email.toLowerCase() === key);
+            if (!current || current.active !== m.active) {
+                toast("Staff access changed while the confirmation was open. Refresh and try again.", "error");
+                pending.current.delete(key);
+                return;
+            }
+        }
+        try {
+            await saveStaff(m.email, { name: m.name, role: m.role, active: m.active, ...patch }, user.email);
+            if (statusChange) toast(`${m.email} ${patch.active ? "enabled" : "disabled"}.`);
+        } catch (e) {
+            toast(e.code === "permission-denied" ? "Permission denied." : e.message, "error");
+        } finally {
+            pending.current.delete(key);
+        }
+    };
 
     const remove = async (m) => {
-        if (await confirm({ title: "Remove staff", message: `Remove ${m.email}? They can no longer sign in to the POS.`, confirmLabel: "Remove", danger: true }))
-            removeStaff(m.email).then(() => toast(`Removed ${m.email}`)).catch((e) => toast(e.message, "error"));
+        const key = m.email.toLowerCase();
+        if (pending.current.has(key)) return;
+        if (await confirm({ title: "Remove staff", message: `Remove ${m.email}? They can no longer sign in to the POS.`, confirmLabel: "Remove", danger: true })) {
+            pending.current.add(key);
+            try {
+                await removeStaff(m.email);
+                toast(`Removed ${m.email}`);
+            } catch (e) {
+                toast(e.message, "error");
+            } finally {
+                pending.current.delete(key);
+            }
+        }
     };
 
     return (

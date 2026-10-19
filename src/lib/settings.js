@@ -1,11 +1,12 @@
 export const SHARED_KEYS = [
     "name", "tagline", "address", "phone", "header", "footer",
     "showBill", "showDate", "showPayment", "headerMode", "printKitchen", "logo",
+    "posMode",
 ];
 
 export const DEFAULT_SETTINGS = {
-    name: "The Kaabil Kitchen",
-    tagline: "A Tea Place for Employees",
+    name: "My Business",
+    tagline: "Point of Sale Console",
     address: "",
     phone: "",
     header: "",
@@ -16,6 +17,7 @@ export const DEFAULT_SETTINGS = {
     headerMode: "text",
     printKitchen: true,
     logo: null,
+    posMode: "standard",
 };
 
 export const pickShared = (value) =>

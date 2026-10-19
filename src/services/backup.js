@@ -7,6 +7,7 @@ const all = async (name) => (await getDocs(col(name))).docs.map((d) => ({ _id: d
 export async function buildBackup({ includeBills = true, includeAudit = true } = {}) {
     const [products, config, staff] = await Promise.all([all("products"), all("config"), all("staff")]);
     const bills = includeBills ? await all("bills") : [];
+    const closings = includeBills ? await all("closings") : [];
     const audit = includeAudit ? await all("audit") : [];
 
     return {
@@ -19,8 +20,15 @@ export async function buildBackup({ includeBills = true, includeAudit = true } =
             config,
             staff,
             bills,
+            closings,
             audit,
         },
-        counts: { products: products.length, staff: staff.length, bills: bills.length, audit: audit.length },
+        counts: {
+            products: products.length,
+            staff: staff.length,
+            bills: bills.length,
+            closings: closings.length,
+            audit: audit.length,
+        },
     };
 }

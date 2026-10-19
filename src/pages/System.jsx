@@ -10,7 +10,7 @@ import { istDateKey } from "../lib/format";
 import { getTodayCounter, saveApp, watchApp } from "../services/app";
 import { buildBackup } from "../services/backup";
 
-const SEMVER = /^\d+\.\d+\.\d+$/;
+const SEMVER = /^\d+\.\d+\.\d+\$/;
 
 function AppControl({ user }) {
     const { toast } = useFeedback();
@@ -27,10 +27,14 @@ function AppControl({ user }) {
         if (versionBad) return toast("Use a version like 1.2.0", "error");
         setSaving(true);
         try {
-            const patch = { ...draft };
-            if (typeof patch.minVersion === "string") patch.minVersion = patch.minVersion.trim();
-            if (typeof patch.message === "string") patch.message = patch.message.trim();
-            await saveApp(patch, user.email);
+            await saveApp(
+                {
+                    maintenance: !!v.maintenance,
+                    message: (v.message || "").trim(),
+                    minVersion: (v.minVersion || "").trim(),
+                },
+                user.email,
+            );
             setDraft({});
             toast("App control saved");
         } catch (e) {
@@ -156,7 +160,7 @@ function About() {
             <dl className="grid gap-3 text-sm sm:grid-cols-2">
                 {[
                     ["Console version", `v${pkg.version}`],
-                    ["Business", BIZ],
+                    ["Active Business ID", BIZ],
                     ["Firebase project", import.meta.env.VITE_FIREBASE_PROJECT_ID || "—"],
                     ["Timezone", "Asia/Kolkata (IST)"],
                 ].map(([k, val]) => (

@@ -1,10 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { NAV } from "../config/nav";
 
-const KEYS = NAV.map((n) => n.key);
+const KEYS = [...NAV.map((n) => n.key), "master"];
+
+const isTekSquadEmail = () => {
+    // We check hash or fallback; App.jsx handles the primary redirect
+    return false;
+};
+
 const read = () => {
     const h = window.location.hash.replace(/^#\/?/, "").split("?")[0];
-    return KEYS.includes(h) ? h : "overview";
+    if (KEYS.includes(h)) return h;
+    return "overview";
 };
 
 /** Tiny hash router: refresh keeps the page, browser Back works. */

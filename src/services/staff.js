@@ -17,10 +17,16 @@ export const watchStaff = (onData, onError) =>
                             name: x.name || "",
                             role: x.role === "owner" ? "owner" : "cashier",
                             active: x.active === true, // same strict check as the POS
+                            root: x.root === true,
                             updatedAt: x.updatedAt || null,
                         };
                     })
-                    .sort((a, b) => (b.role === "owner") - (a.role === "owner") || a.email.localeCompare(b.email)),
+                    .sort(
+                        (a, b) =>
+                            (b.root === true) - (a.root === true) ||
+                            (b.role === "owner") - (a.role === "owner") ||
+                            a.email.localeCompare(b.email),
+                    ),
             ),
         onError,
     );

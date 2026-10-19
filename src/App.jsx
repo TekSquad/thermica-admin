@@ -10,6 +10,7 @@ import Login, { Denied, Splash } from "./pages/Login";
 const PAGES = {
     overview: lazy(() => import("./pages/Overview")),
     sales: lazy(() => import("./pages/Sales")),
+    closings: lazy(() => import("./pages/Closings")),
     audit: lazy(() => import("./pages/Audit")),
     menu: lazy(() => import("./pages/Menu")),
     receipt: lazy(() => import("./pages/Receipt")),
@@ -35,7 +36,7 @@ export default function App() {
     if (auth.status === "signedOut") return <Login auth={auth} />;
     if (auth.status === "denied") return <Denied auth={auth} />;
 
-    const Page = PAGES[route];
+    const Page = PAGES[route] || PAGES.overview;
     return (
         <Shell route={route} onNavigate={go} user={auth.user} onSignOut={auth.signOut}>
             <ErrorBoundary key={route}>

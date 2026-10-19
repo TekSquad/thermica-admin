@@ -5,7 +5,7 @@ import useWatch from "../hooks/useWatch";
 import { fmtStamp } from "../lib/format";
 import { removeStaff, saveStaff, watchStaff } from "../services/staff";
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+\$/;
 
 function AddModal({ existing, by, onClose }) {
     const { toast } = useFeedback();
@@ -18,10 +18,12 @@ function AddModal({ existing, by, onClose }) {
     const save = async () => {
         const clean = email.trim().toLowerCase();
         if (!EMAIL.test(clean)) return setErr("Enter a valid Google email address.");
+        const target = existing.find((m) => m.email.toLowerCase() === clean);
+        if (target?.root) return setErr("The primary owner account cannot be modified.");
         setBusy(true);
         try {
             await saveStaff(clean, { name: name.trim(), role, active: true }, by);
-            toast(existing.some((m) => m.email.toLowerCase() === clean) ? `Updated ${clean}` : `Added ${clean} as ${role}`);
+            toast(target ? `Updated ${clean}` : `Added ${clean} as ${role}`);
             onClose();
         } catch (e) {
             setErr(e.message);
@@ -64,8 +66,11 @@ export default function Staff({ user }) {
     const [adding, setAdding] = useState(false);
 
     const activeOwners = list.filter((m) => m.role === "owner" && m.active).length;
-    // Never allow locking yourself, or the last active owner, out.
-    const locked = (m) => m.email.toLowerCase() === user.email || (m.role === "owner" && m.active && activeOwners <= 1);
+    // Never allow locking out the primary root owner, yourself, or the last active owner.
+    const locked = (m) =>
+        m.root ||
+        m.email.toLowerCase() === user.email ||
+        (m.role === "owner" && m.active && activeOwners <= 1);
 
     const update = (m, patch) =>
         saveStaff(m.email, { name: m.name, role: m.role, active: m.active, ...patch }, user.email).catch((e) =>
@@ -103,6 +108,7 @@ export default function Staff({ user }) {
                                         <div className="flex flex-wrap items-center gap-1.5">
                                             <span className="truncate text-sm font-bold text-slate-900">{m.name || m.email}</span>
                                             {self && <Badge>You</Badge>}
+                                            {m.root && <Badge tone="amber">Primary</Badge>}
                                             <Badge tone={m.role === "owner" ? "blue" : "slate"}>{m.role === "owner" ? "Manager" : "Staff"}</Badge>
                                             {!m.active && <Badge tone="red">Disabled</Badge>}
                                         </div>
@@ -137,7 +143,7 @@ export default function Staff({ user }) {
                     <li>Anyone can attempt a Google sign-in, but accounts not on this list are refused by the POS and by the database.</li>
                     <li>To stop accepting new staff, simply don't add new emails. Disable someone to revoke access instantly.</li>
                     <li>A disabled phone that is offline keeps its cached role until it next reaches the server, then its pending bills are rejected.</li>
-                    <li>You and the last active owner are protected from being disabled or removed.</li>
+                    <li>The primary owner, your own account, and the last active owner are protected from being disabled or removed.</li>
                 </ul>
             </Card>
 
